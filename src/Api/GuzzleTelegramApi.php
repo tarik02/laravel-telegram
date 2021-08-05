@@ -4,13 +4,9 @@ namespace Tarik02\LaravelTelegram\Api;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use InvalidArgumentException;
-use Psr\Http\Message\ResponseInterface;
 use Tarik02\Telegram\Entities\InputFile;
-use Throwable;
 
 use GuzzleHttp\{
-    Promise\PromiseInterface,
-    Promise\RejectedPromise,
     Client,
     RequestOptions
 };
@@ -138,54 +134,50 @@ class GuzzleTelegramApi extends BaseTelegramApi
      */
     protected function performJsonRequest(string $method, string $url, array $data): array
     {
-        try {
-            switch ($method) {
-                case 'GET':
-                    $response = $this->client
-                        ->get($url, [
-                            RequestOptions::QUERY => $data,
-                            RequestOptions::HTTP_ERRORS => false,
-                        ]);
+        switch ($method) {
+            case 'GET':
+                $response = $this->client
+                    ->get($url, [
+                        RequestOptions::QUERY => $data,
+                        RequestOptions::HTTP_ERRORS => false,
+                    ]);
 
-                    return \json_decode($response->getBody(), true);
+                return \json_decode($response->getBody(), true);
 
-                case 'POST':
-                    $multipart = $this->files;
-                    $this->files = [];
+            case 'POST':
+                $multipart = $this->files;
+                $this->files = [];
 
-                    if (\count($multipart) > 0) {
-                        foreach ($data as $key => $value) {
-                            if (\is_array($value)) {
-                                $multipart[] = [
-                                    'name' => $key,
-                                    'contents' => \json_encode($value),
-                                ];
-                            } else {
-                                $multipart[] = [
-                                    'name' => $key,
-                                    'contents' => $value,
-                                ];
-                            }
+                if (\count($multipart) > 0) {
+                    foreach ($data as $key => $value) {
+                        if (\is_array($value)) {
+                            $multipart[] = [
+                                'name' => $key,
+                                'contents' => \json_encode($value),
+                            ];
+                        } else {
+                            $multipart[] = [
+                                'name' => $key,
+                                'contents' => $value,
+                            ];
                         }
-                        $data = null;
                     }
+                    $data = null;
+                }
 
-                    $response = $this->client
-                        ->post($url, [
-                            RequestOptions::JSON => $data,
-                            RequestOptions::HTTP_ERRORS => false,
-                            RequestOptions::MULTIPART => $multipart,
-                        ]);
+                $response = $this->client
+                    ->post($url, [
+                        RequestOptions::JSON => $data,
+                        RequestOptions::HTTP_ERRORS => false,
+                        RequestOptions::MULTIPART => $multipart,
+                    ]);
 
-                    return \json_decode($response->getBody(), true);
+                return \json_decode($response->getBody(), true);
 
-                default:
-                    throw new InvalidArgumentException(
-                        \sprintf('Argument "method" value expected to be one of: "GET", "POST". Got: "%s"', $method)
-                    );
-            }
-        } catch (Throwable $exception) {
-            return new RejectedPromise($exception);
+            default:
+                throw new InvalidArgumentException(
+                    \sprintf('Argument "method" value expected to be one of: "GET", "POST". Got: "%s"', $method)
+                );
         }
     }
 }
