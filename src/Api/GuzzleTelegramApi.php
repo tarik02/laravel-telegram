@@ -7,7 +7,7 @@ use InvalidArgumentException;
 use Tarik02\Telegram\Entities\InputFile;
 
 use GuzzleHttp\{
-    Client,
+    ClientInterface,
     RequestOptions
 };
 
@@ -18,9 +18,9 @@ use GuzzleHttp\{
 class GuzzleTelegramApi extends BaseTelegramApi
 {
     /**
-     * @var Client
+     * @var ClientInterface
      */
-    protected Client $client;
+    protected ClientInterface $client;
 
     /**
      * @var array
@@ -30,10 +30,10 @@ class GuzzleTelegramApi extends BaseTelegramApi
     /**
      * @param string $token
      * @param Dispatcher $dispatcher
-     * @param Client $client
+     * @param ClientInterface $client
      * @return void
      */
-    public function __construct(string $token, Dispatcher $dispatcher, Client $client)
+    public function __construct(string $token, Dispatcher $dispatcher, ClientInterface $client)
     {
         parent::__construct($token, $dispatcher);
 
@@ -137,7 +137,7 @@ class GuzzleTelegramApi extends BaseTelegramApi
         switch ($method) {
             case 'GET':
                 $response = $this->client
-                    ->get($url, [
+                    ->request('get', $url, [
                         RequestOptions::QUERY => $data,
                         RequestOptions::HTTP_ERRORS => false,
                     ]);
@@ -166,7 +166,7 @@ class GuzzleTelegramApi extends BaseTelegramApi
                 }
 
                 $response = $this->client
-                    ->post($url, [
+                    ->request('post', $url, [
                         RequestOptions::JSON => $data,
                         RequestOptions::HTTP_ERRORS => false,
                         RequestOptions::MULTIPART => $multipart,

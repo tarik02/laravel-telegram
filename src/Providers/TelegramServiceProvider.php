@@ -4,6 +4,10 @@ namespace Tarik02\LaravelTelegram\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+use GuzzleHttp\{
+    Client,
+    ClientInterface
+};
 use Tarik02\LaravelTelegram\Console\Commands\{
     TelegramUpdatesGet,
     TelegramUpdatesQueue,
@@ -49,6 +53,12 @@ class TelegramServiceProvider extends ServiceProvider
             TelegramApi::class,
             GuzzleTelegramApi::class
         );
+
+        $this->app->when(GuzzleTelegramApi::class)
+            ->needs(ClientInterface::class)
+            ->give(fn () => new Client([
+                'base_uri' => 'https://api.telegram.org/',
+            ]));
 
         /** @var Telegram $telegram */
         $telegram = $this->app[Telegram::class];
