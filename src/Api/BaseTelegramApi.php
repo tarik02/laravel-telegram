@@ -2,7 +2,6 @@
 
 namespace Tarik02\LaravelTelegram\Api;
 
-use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Client\Factory as HttpClient;
 use Tarik02\LaravelTelegram\Contracts\TelegramApi;
@@ -87,7 +86,7 @@ abstract class BaseTelegramApi implements TelegramApi
     protected function buildUrlForMethod(Method $method): string
     {
         return \sprintf(
-            'https://api.telegram.org/bot%s/%s',
+            '/bot%s/%s',
             $this->token,
             $method->name()
         );
