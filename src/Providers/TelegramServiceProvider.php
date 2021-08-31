@@ -2,6 +2,8 @@
 
 namespace Tarik02\LaravelTelegram\Providers;
 
+use Illuminate\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
 
 use GuzzleHttp\{
@@ -56,8 +58,8 @@ class TelegramServiceProvider extends ServiceProvider
 
         $this->app->when(GuzzleTelegramApi::class)
             ->needs(ClientInterface::class)
-            ->give(fn () => new Client([
-                'base_uri' => 'https://api.telegram.org/',
+            ->give(fn (Container $container) => new Client([
+                'base_uri' => $container->get(ConfigRepository::class)->get('telegram.api_base_uri', 'https://api.telegram.org/'),
             ]));
 
         /** @var Telegram $telegram */
