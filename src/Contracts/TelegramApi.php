@@ -4,6 +4,7 @@ namespace Tarik02\LaravelTelegram\Contracts;
 
 use Tarik02\Telegram\Contracts\CallsMethods;
 use Tarik02\Telegram\Entities\InputFile;
+use Tarik02\Telegram\Methods\Method;
 
 /**
  * Interface TelegramApi
@@ -43,4 +44,10 @@ interface TelegramApi extends CallsMethods
      * @return InputFile
      */
     public function attachFileFromResource($resource, ?string $filename = null): InputFile;
+
+    /**
+     * @param Method $method
+     * @return bool
+     */
+    public function canCallMethodWithWebhookResponse(Method $method): bool;
 }

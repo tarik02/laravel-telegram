@@ -122,11 +122,17 @@ class WebhookController extends Controller
             if (count($response->getReplies()) === 1) {
                 $reply = $response->getReplies()[0];
 
-                $event = new WebhookMethodCalling($reply);
-                $this->dispatcher->dispatch($event);
-                $reply = $event->method;
+                $callWithWebhook = $bot->getApi()->canCallMethodWithWebhookResponse($reply);
 
-                if ($event->callWithWebhook) {
+                if ($callWithWebhook) {
+                    $event = new WebhookMethodCalling($reply);
+                    $this->dispatcher->dispatch($event);
+                    $reply = $event->method;
+
+                    $callWithWebhook = $event->callWithWebhook;
+                }
+
+                if ($callWithWebhook) {
                     return Response::json(\array_merge(
                         $reply->toPayload(),
                         [

@@ -5,6 +5,7 @@ namespace Tarik02\LaravelTelegram\Api;
 use Illuminate\Contracts\Events\Dispatcher;
 use InvalidArgumentException;
 use Tarik02\Telegram\Entities\InputFile;
+use Tarik02\Telegram\Methods\Method;
 
 use GuzzleHttp\{
     ClientInterface,
@@ -124,6 +125,15 @@ class GuzzleTelegramApi extends BaseTelegramApi
 
         return InputFile::make()
             ->withPayload('attach://' . $attachmentName);
+    }
+
+    /**
+     * @param Method $method
+     * @return bool
+     */
+    public function canCallMethodWithWebhookResponse(Method $method): bool
+    {
+        return empty($this->files);
     }
 
     /**
