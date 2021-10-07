@@ -6,10 +6,13 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Routing\SortedMiddleware;
 use Illuminate\Support\Facades\Facade;
-use Tarik02\LaravelTelegram\Contracts\Kernel as KernelContract;
 use Tarik02\LaravelTelegram\Exceptions\ResponseException;
 use Tarik02\Telegram\Entities\Update;
 
+use Tarik02\LaravelTelegram\Contracts\{
+    Bot,
+    Kernel as KernelContract
+};
 use Tarik02\LaravelTelegram\Events\{
     RequestHandled,
     RequestHandling

@@ -3,8 +3,12 @@
 namespace Tarik02\LaravelTelegram\Console\Commands;
 
 use Illuminate\Console\Command;
-use Tarik02\LaravelTelegram\Contracts\Bot;
 use Tarik02\Telegram\Methods\GetWebhookInfo;
+
+use Tarik02\LaravelTelegram\Contracts\{
+    Bot,
+    BotFactory
+};
 
 /**
  * Class TelegramWebhookGetInfo
@@ -36,7 +40,7 @@ class TelegramWebhookGetInfo extends Command
         $botName = $this->input->getOption('bot');
 
         /** @var Bot $bot */
-        $bot = $this->getLaravel()->get("telegram.bots.{$botName}");
+        $bot = $this->getLaravel()->get(BotFactory::class)->createBot($botName);
 
         $info = $bot->getApi()->getWebhookInfo(
             GetWebhookInfo::make()

@@ -16,6 +16,7 @@ use Illuminate\Http\{
 };
 use Tarik02\LaravelTelegram\{
     Contracts\Bot,
+    Contracts\BotFactory,
     Contracts\Kernel,
     Contracts\RequestFactory,
     Events\WebhookMethodCalling,
@@ -31,14 +32,14 @@ use Tarik02\LaravelTelegram\{
 class WebhookController extends Controller
 {
     /**
-     * @var Telegram
-     */
-    protected Telegram $telegram;
-
-    /**
      * @var Kernel
      */
     protected Kernel $kernel;
+
+    /**
+     * @var BotFactory
+     */
+    protected BotFactory $botFactory;
 
     /**
      * @var RequestFactory
@@ -58,20 +59,21 @@ class WebhookController extends Controller
     /**
      * @param Telegram $telegram
      * @param Kernel $kernel
+     * @param BotFactory $botFactory
      * @param RequestFactory $requestFactory
      * @param ExceptionHandler $exceptionHandler
      * @param Dispatcher $dispatcher
      * @return void
      */
     public function __construct(
-        Telegram $telegram,
         Kernel $kernel,
+        BotFactory $botFactory,
         RequestFactory $requestFactory,
         ExceptionHandler $exceptionHandler,
         Dispatcher $dispatcher
     ) {
-        $this->telegram = $telegram;
         $this->kernel = $kernel;
+        $this->botFactory = $botFactory;
         $this->requestFactory = $requestFactory;
         $this->exceptionHandler = $exceptionHandler;
         $this->dispatcher = $dispatcher;
@@ -97,17 +99,26 @@ class WebhookController extends Controller
     }
 
     /**
-     * @param WebhookRequest $webhookRequest
+     * @param WebhookRequest $request
      * @return Bot
      */
-    protected function resolveBotByWebhookRequest(WebhookRequest $webhookRequest): Bot
+    protected function resolveBotByWebhookRequest(WebhookRequest $request): Bot
     {
-        return $this->telegram->bot(
-            \preg_replace(
-                '/^telegram\.webhook\./',
-                '',
-                $webhookRequest->route()->getName()
-            )
+        return $this->botFactory->createBot(
+            $this->resolveBotNameByWebhookRequest($request)
+        );
+    }
+
+    /**
+     * @param WebhookRequest $request
+     * @return string
+     */
+    protected function resolveBotNameByWebhookRequest(WebhookRequest $request): string
+    {
+        return \preg_replace(
+            '/^telegram\.webhook\./',
+            '',
+            $request->route()->getName()
         );
     }
 

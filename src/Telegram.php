@@ -4,8 +4,12 @@ namespace Tarik02\LaravelTelegram;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Routing\RouteRegistrar;
-use Tarik02\LaravelTelegram\Contracts\Bot;
 use Tarik02\LaravelTelegram\Http\Controllers\WebhookController;
+
+use Tarik02\LaravelTelegram\Contracts\{
+    Bot,
+    BotFactory
+};
 
 /**
  * Class Telegram
@@ -41,12 +45,16 @@ class Telegram
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      * @return Bot
      */
-    public function bot(string $name): Bot
+    public function bot(?string $name = null): Bot
     {
-        return $this->app["telegram.bots.{$name}"];
+        if ($name === null) {
+            return $this->app['telegram.bot'];
+        }
+
+        return $this->app[BotFactory::class]->createBot($name);
     }
 
     /**

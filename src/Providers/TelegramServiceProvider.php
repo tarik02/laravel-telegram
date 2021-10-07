@@ -19,10 +19,12 @@ use Tarik02\LaravelTelegram\Console\Commands\{
 };
 use Tarik02\LaravelTelegram\{
     Api\GuzzleTelegramApi,
+    Contracts\BotFactory as BotFactoryContract,
     Contracts\Kernel as KernelContract,
     Contracts\RequestFactory as RequestFactoryContract,
     Contracts\TelegramApi,
     Bot,
+    BotFactory,
     Kernel,
     RequestFactory,
     Telegram
@@ -51,6 +53,11 @@ class TelegramServiceProvider extends ServiceProvider
             RequestFactory::class
         );
 
+        $this->app->singleton(
+            BotFactoryContract::class,
+            BotFactory::class
+        );
+
         $this->app->bind(
             TelegramApi::class,
             GuzzleTelegramApi::class
@@ -59,7 +66,7 @@ class TelegramServiceProvider extends ServiceProvider
         $this->app->when(GuzzleTelegramApi::class)
             ->needs(ClientInterface::class)
             ->give(fn (Container $container) => new Client([
-                'base_uri' => $container->get(ConfigRepository::class)->get('telegram.api_base_uri', 'https://api.telegram.org/'),
+                'base_uri' => $container->get(ConfigRepository::class)->get('telegram.api_base_uri') ?? 'https://api.telegram.org/',
             ]));
 
         /** @var Telegram $telegram */
