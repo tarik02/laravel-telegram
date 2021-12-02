@@ -88,7 +88,7 @@ abstract class BaseTelegramApi implements TelegramApi
         return \sprintf(
             '/bot%s/%s',
             $this->token,
-            $method->name()
+            $method->methodName()
         );
     }
 

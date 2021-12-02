@@ -147,7 +147,7 @@ class WebhookController extends Controller
                     return Response::json(\array_merge(
                         $reply->toPayload(),
                         [
-                            'method' => $reply->name(),
+                            'method' => $reply->methodName(),
                         ]
                     ));
                 } else {
