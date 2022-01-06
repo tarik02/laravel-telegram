@@ -9,7 +9,7 @@
     "require": {
         "php": "^7.4|^8.0",
         "guzzlehttp/guzzle": "^7.2",
-        "tarik02/telegram-types": "^0.2.0",
+        "tarik02/telegram-types": "^0.3.0",
         "illuminate/support": "^7.0|^8.0",
         "illuminate/routing": "^7.0|^8.0",
         "illuminate/console": "^7.0|^8.0",
