@@ -151,8 +151,7 @@ class GuzzleTelegramApi extends BaseTelegramApi
                         RequestOptions::QUERY => $data,
                         RequestOptions::HTTP_ERRORS => false,
                     ]);
-
-                return \json_decode($response->getBody(), true);
+                break;
 
             case 'POST':
                 $multipart = $this->files;
@@ -181,13 +180,34 @@ class GuzzleTelegramApi extends BaseTelegramApi
                         RequestOptions::HTTP_ERRORS => false,
                         RequestOptions::MULTIPART => $multipart,
                     ]);
-
-                return \json_decode($response->getBody(), true);
+                break;
 
             default:
                 throw new InvalidArgumentException(
                     \sprintf('Argument "method" value expected to be one of: "GET", "POST". Got: "%s"', $method)
                 );
         }
+
+        if ($response->getStatusCode() === 200) {
+            return \json_decode($response->getBody(), true, 512, \JSON_THROW_ON_ERROR);
+        }
+
+        $bodyContents = $response->getBody()->__toString();
+
+        if ($response->getHeader('Content-Type') === 'application/json') {
+            $body = \json_decode($bodyContents, true, 512, \JSON_THROW_ON_ERROR);
+
+            return [
+                'ok' => false,
+                'error_code' => $body['error_code'] ?? $response->getStatusCode(),
+                'description' => $body['description'] ?? $response->getReasonPhrase(),
+            ];
+        }
+
+        return [
+            'ok' => false,
+            'error_code' => $response->getStatusCode(),
+            'description' => $response->getReasonPhrase(),
+        ];
     }
 }

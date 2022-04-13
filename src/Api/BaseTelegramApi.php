@@ -4,17 +4,15 @@ namespace Tarik02\LaravelTelegram\Api;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Client\Factory as HttpClient;
-use Tarik02\LaravelTelegram\Contracts\TelegramApi;
 use Tarik02\Telegram\Methods\Method;
 use Tarik02\Telegram\Traits\CallsMethods;
 
-use Tarik02\LaravelTelegram\Events\{
-    MethodCalled,
-    MethodCalling
-};
-use Tarik02\LaravelTelegram\Exceptions\{
-    TelegramApiBadRequestException,
-    TelegramApiRequestException
+use Tarik02\LaravelTelegram\{
+    Contracts\TelegramApi,
+    Events\MethodCalled,
+    Events\MethodCalling,
+    Exceptions\TelegramApiRequestException,
+    ExceptionFactory
 };
 
 /**
@@ -65,13 +63,16 @@ abstract class BaseTelegramApi implements TelegramApi
         );
 
         if (! \is_array($response) || ! ($response['ok'] ?? false) || ! isset($response['result'])) {
-            switch ($response['error_code'] ?? null) {
-                case 400:
-                    throw new TelegramApiBadRequestException($this, $payload, $response['description'] ?? '');
-
-                default:
-                    throw new TelegramApiRequestException($this, $payload, $response['description'] ?? '');
+            if (isset($response['description']) && \is_string($response['description'])) {
+                throw (new ExceptionFactory)->createTelegramException(
+                    $this,
+                    $method,
+                    $response['error_code'] ?? 0,
+                    $response['description']
+                );
             }
+
+            throw new TelegramApiRequestException($this, $payload, $response['description'] ?? '', $response['error_code'] ?? 0);
         }
 
         $event = new MethodCalled($method, $method::createResponse($response['result']));

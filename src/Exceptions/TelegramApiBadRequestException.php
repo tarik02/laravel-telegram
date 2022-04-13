@@ -9,7 +9,7 @@ use Throwable;
  * Class TelegramApiBadRequestException
  * @package Tarik02\LaravelTelegram\Exceptions
  */
-final class TelegramApiBadRequestException extends TelegramApiRequestException
+class TelegramApiBadRequestException extends TelegramApiRequestException
 {
     /**
      * @var string
