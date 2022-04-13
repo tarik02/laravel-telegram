@@ -39,7 +39,7 @@ class ExceptionFactory
         if (isset(static::EXCEPTION_MAP[$code][$message])) {
             $exceptionClass = static::EXCEPTION_MAP[$code][$message];
 
-            return $exceptionClass($api, $method, $message, $code);
+            return new $exceptionClass($api, $method, $message, $code);
         }
 
         return new MethodCallException($api, $method, $message, $code);
