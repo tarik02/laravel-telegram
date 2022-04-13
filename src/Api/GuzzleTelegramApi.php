@@ -4,6 +4,7 @@ namespace Tarik02\LaravelTelegram\Api;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use InvalidArgumentException;
+use JsonException;
 use Tarik02\Telegram\Entities\InputFile;
 use Tarik02\Telegram\Methods\Method;
 
@@ -194,7 +195,7 @@ class GuzzleTelegramApi extends BaseTelegramApi
 
         $bodyContents = $response->getBody()->__toString();
 
-        if ($response->getHeader('Content-Type') === 'application/json') {
+        try {
             $body = \json_decode($bodyContents, true, 512, \JSON_THROW_ON_ERROR);
 
             return [
@@ -202,12 +203,12 @@ class GuzzleTelegramApi extends BaseTelegramApi
                 'error_code' => $body['error_code'] ?? $response->getStatusCode(),
                 'description' => $body['description'] ?? $response->getReasonPhrase(),
             ];
+        } catch (JsonException $e) {
+            return [
+                'ok' => false,
+                'error_code' => $response->getStatusCode(),
+                'description' => $response->getReasonPhrase(),
+            ];
         }
-
-        return [
-            'ok' => false,
-            'error_code' => $response->getStatusCode(),
-            'description' => $response->getReasonPhrase(),
-        ];
     }
 }
