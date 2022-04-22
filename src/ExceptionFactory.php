@@ -7,6 +7,7 @@ use Tarik02\Telegram\Methods\Method;
 
 use Tarik02\LaravelTelegram\Exceptions\{
     Telegram\BotWasBlockedByUser,
+    Telegram\BotWasKickedFromTheSupergroupChat,
     Telegram\QueryResponseOutdated,
     MethodCallException,
     TelegramApiException
@@ -24,6 +25,7 @@ class ExceptionFactory
         ],
         403 => [
             'Forbidden: bot was blocked by the user' => BotWasBlockedByUser::class,
+            'Forbidden: bot was kicked from the supergroup chat' => BotWasKickedFromTheSupergroupChat::class,
         ],
     ];
 
